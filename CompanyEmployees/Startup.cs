@@ -36,6 +36,8 @@ namespace CompanyEmployees
             services.ConfigureCors(); //Connecting to Extension Method for Cors
             services.ConfigureIISIntegration(); //Connecting to Extension Method for IIS
             services.ConfigureLoggerService();
+            services.ConfigureSqlContext(Configuration);
+            services.ConfigureRepositoryManager();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
