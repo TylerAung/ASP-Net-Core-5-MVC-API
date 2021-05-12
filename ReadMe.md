@@ -1,32 +1,43 @@
-﻿Setup
-PropertieslaunchSettings.json
-"launchBrowser": false, //Prevent web browser from launching on App Start
-"launchUrl": "swagger", //direct path of url on launch
+﻿Setup --> Properties
+
+    launchSettings.json
+    "launchBrowser": false, //Prevent web browser from launching on App Start
+    "launchUrl": "swagger", //direct path of url on launch
+
+
 Program.cs 
-CreateDefaultBuilder(args)//Sets default files and variable for project & logger configuration
-webBuilder.UseStartup<Startup>(); // Configure embedded or custom services for application needs, ultimately links to Startup.cs
+
+    CreateDefaultBuilder(args)//Sets default files and variable for project & logger configuration
+    webBuilder.UseStartup<Startup>(); // Configure embedded or custom services for application needs, ultimately links to Startup.cs
 Startup.cs 
-ConfigureServices() //Used to configure services, which is a reusable part of code that adds some functionality to application
-Configure() //Add different middleware components to app request pipeline
-appsettings.json
-appsetings.Development.json
-appsettings.Production.json	
+
+    ConfigureServices() //Used to configure services, which is a reusable part of code that adds some functionality to application
+    Configure() //Add different middleware components to app request pipeline
+
+    appsettings.json
+    appsetings.Development.json
+    appsettings.Production.json	
+
 As development and production environments have different URLs, ports, conn str, password and other sensitive information. There’s a need for different appsettings.json file for different environment
+
+
 Setting application environment
 Command prompt by typing set ASPNETCORE_ENVIRONMENT=Production in Windows
-launchSettings.json  "ASPNETCORE_ENVIRONMENT": "Development"
+
+    launchSettings.json { "ASPNETCORE_ENVIRONMENT": "Development"}
+
 VS will automatically linked appsettings.Production.json on the solution explorer once created, but in file explorer is separated
 
+Extension Method accepts this as first parameter, which represents data type of object which will be using extension method. 
+Extension Method must be defined inside a static class, which extend the behaviour of a type in .Net. 
+Once defined, it can be chained multiple times on same type of object
 
- 
-Extension Method accepts this as first parameter, which represents data type of object which will be using extension method. Extension Method must be defined inside a static class, which extend the behaviour of a type in .Net. Once defined, it can be chained multiple times on same type of object
+Extensions(New Folder) --> ServicesExtensions.cs
 
-Extensions(New Folder) ServicesExtensions.cs
-
-CORS Configuration  Give or restrict access rights to application from different domains
+CORS Configuration --> Give or restrict access rights to application from different domains
 Send request from different domain to app
 
-using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection;
 
     public static class ServicesExtensions
     {
@@ -42,29 +53,28 @@ using Microsoft.Extensions.DependencyInjection;
     }
 
 Every Request	Restrictive Request
-AllowAnyOrigin()	WithOrigins("https://example.com")
-AllowAnyMethod()	WithMethods("POST", "GET")
-AllowAnyHeader()	WithHeaders("accept", "content-type")
+
+    AllowAnyOrigin()	WithOrigins("https://example.com")
+    AllowAnyMethod()	WithMethods("POST", "GET")
+    AllowAnyHeader()	WithHeaders("accept", "content-type")
 
 
 
 IIS Configuration (In the Extensions Class)
 Alter ASP.NET Core App to host APP on IIS, instead of default self-hosting
+
         public static void ConfigureIISIntegration(this IServiceCollection services) 
             => services.Configure<IISOptions>(options => {
 
            });
 Default values are good enough in the options property, but room for more customization is available.
- 
 
- 
 Implement extension Methods onto Startup.cs
 
-
-public void ConfigureServices(IServiceCollection services) {
-    services.ConfigureCors(); //Connecting to Extension Method for Cors
-    services.ConfigureIISIntegration(); //Connecting to Extension Method for IIS
-}
+    public void ConfigureServices(IServiceCollection services) {
+        services.ConfigureCors(); //Connecting to Extension Method for Cors
+        services.ConfigureIISIntegration(); //Connecting to Extension Method for IIS
+    }
 
 using Microsoft.AspNetCore.HttpOverrides;
 
@@ -122,134 +132,159 @@ Logging helps to easily follow flow of application when debugger is inaccessible
 2)	Add Project References (1 to 2, 2 to 3, 3 have access to 1 & 2)
 3)	Add ILoggerManager interface into Models project and make public
 4)	ILoggerManager properties(void LogInfo(string message); void LogWarn(string message); void LogDebug(string message); void LogError(string message);
-5)	Install NLog.Extensions.Logging(Nuget)  LoggerService Proj, NLog is a logging platform for .Net which help to create and log messages.
+5)	Install NLog.Extensions.Logging(Nuget) --> LoggerService Proj, NLog is a logging platform for .Net which help to create and log messages.
 6)	Add new class LoggerManager and inherit ILoggerManager
 7)	Add constructor and interface and (class scope variable private static ILogger logger = LogManager.GetCurrentClassLogger();)
-using Contracts;
-using NLog;
 
-namespace LoggerService
-{
-    public class LoggerManager : ILoggerManager
+
+    using Contracts;
+    using NLog;
+    namespace LoggerService
     {
-        private static ILogger logger = LogManager.GetCurrentClassLogger();
-
-        public LoggerManager()
+        public class LoggerManager : ILoggerManager
         {
-
-        }
-
-        public void LogDebug(string message)
-        {
-            logger.Debug(message);
-        }
-
-        public void LogError(string message)
-        {
-            logger.Error(message);
-        }
-
-        public void LogInfo(string message)
-        {
-            logger.Info(message);
-        }
-
-        public void LogWarn(string message)
-        {
-            logger.Warn(message);
+            private static ILogger logger = LogManager.GetCurrentClassLogger();
+    
+            public LoggerManager()
+            {
+    
+            }
+    
+            public void LogDebug(string message)
+            {
+                logger.Debug(message);
+            }
+    
+            public void LogError(string message)
+            {
+                logger.Error(message);
+            }
+    
+            public void LogInfo(string message)
+            {
+                logger.Info(message);
+            }
+    
+            public void LogWarn(string message)
+            {
+                logger.Warn(message);
+            }
         }
     }
-}
 
 
 8)	In Main Project, create nlog.config file, add the following code but change internal & filename parameter to path, no need to create folder
-<?xml version="1.0" encoding="utf-8" ?>
-<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd" 
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      autoReload="true" 
-      internalLogLevel="Trace" 
-      internalLogFile="C:\Users\admin\Desktop\CompanyEmployeesAPI\internal_logs\internallog.txt">
-  <targets>
-    <target name="logfile" xsi:type="File" 
-            fileName="C:\Users\admin\Desktop\CompanyEmployeesAPI/logs\${shortdate}_logfile.txt" 
-            layout="${longdate} ${level:uppercase=true} ${message}"/>
-  </targets>
-  <rules>
-    <logger name="*" minlevel="Debug" writeTo="logfile" />
-  </rules>
-</nlog>
-9)	Startup.cs   public Startup()  LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config")); 
-Configuration = configuration;
+    
+    
+    <?xml version="1.0" encoding="utf-8" ?>
+    <nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+          autoReload="true" 
+          internalLogLevel="Trace" 
+          internalLogFile="C:\Users\admin\Desktop\CompanyEmployeesAPI\internal_logs\internallog.txt">
+      <targets>
+        <target name="logfile" xsi:type="File" 
+                fileName="C:\Users\admin\Desktop\CompanyEmployeesAPI/logs\${shortdate}_logfile.txt" 
+                layout="${longdate} ${level:uppercase=true} ${message}"/>
+      </targets>
+      <rules>
+        <logger name="*" minlevel="Debug" writeTo="logfile" />
+      </rules>
+    </nlog>
+9)	Startup.cs -->  public Startup() --> 
+
+
+    LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config")); 
+    Configuration = configuration;
+    
 10)	Add another method to ServicesExtension Class
-using Contracts;
-using LoggerService;
-public static void ConfigureLoggerService(this IServiceCollection services) => 
-     services.AddScoped<ILoggerManager, LoggerManager>();
+
+
+    using Contracts;
+    using LoggerService;
+    public static void ConfigureLoggerService(this IServiceCollection services) => 
+         services.AddScoped<ILoggerManager, LoggerManager>();
 
 
 11)	Update Startup.cs  public void ConfigureServices(IServiceCollection services)
-services.ConfigureLoggerService();
+
+
+    services.ConfigureLoggerService();
 12)	After IISIntegration() but before AddControllers()
 13)	In the API Controller  Add 
-public class ModelController : ControllerBase
-{
-private ILoggerManager _logger;
-public ModelController(ILoggerManager logger) { _logger = logger; }
-public IEnumerable<string> Get() { 
-_logger.LogInfo("Here is info message from our values controller.");
-_logger.LogDebug("Here is debug message from our values controller.");
-_logger.LogWarn("Here is warn message from our values controller.");
-_logger.LogError("Here is an error message from our values controller.");
-return new string[] { "value1", "value2" };
-}
-}
+
+
+    public class ModelController : ControllerBase
+    {
+        private ILoggerManager _logger;
+        public ModelController(ILoggerManager logger) { _logger = logger; }
+        public IEnumerable<string> Get() { 
+        _logger.LogInfo("Here is info message from our values controller.");
+        _logger.LogDebug("Here is debug message from our values controller.");
+        _logger.LogWarn("Here is warn message from our values controller.");
+        _logger.LogError("Here is an error message from our values controller.");
+        return new string[] { "value1", "value2" };
+        }
+    }
 14)	Navigate to localhost:port/api/modelcontroller to test
  
 DB Model & Repository Pattern
 Db Class Modelling
 
-[Column("CompanyId")] public Guid Id { get; set; }
-[Required(ErrorMessage = "Company address is a required field.")] 
-[MaxLength(60, ErrorMessage = "Maximum length for the Address is 60 characters")]
-Establishing Foreign Key
-[Column("EmployeeId")]
-public Guid Id { get; set; }
 
-[ForeignKey(nameof(Company))] 
-public Guid CompanyId { get; set; }	[Column("CompanyId")] 
-public Guid Id { get; set; }
-
-Navigational Properties (Relational)
-public Company Company { get; set; }	public ICollection<Employee> Employees { get; set; }
+        [Column("CompanyId")] public Guid Id { get; set; }
+        [Required(ErrorMessage = "Company address is a required field.")] 
+        [MaxLength(60, ErrorMessage = "Maximum length for the Address is 60 characters")]
+        Establishing Foreign Key
+        [Column("EmployeeId")]
+        public Guid Id { get; set; }
+        
+        [ForeignKey(nameof(Company))] 
+        public Guid CompanyId { get; set; }	[Column("CompanyId")] 
+        public Guid Id { get; set; }
+        
+        Navigational Properties (Relational)
+        public Company Company { get; set; }	public ICollection<Employee> Employees { get; set; }
 
 Db Diagram
-
- 	
+
+
+ 	
+
 
 
  
 ServiceExtension Connection
-1)	Create Model Classes (Entities  ModelsFiles)
-2)	 Create Db Context.cs (Entities  Files)
-public class RepositoryContext : DbContext
-{
-public RepositoryContext(DbContextOptions options) : base(options) {}
-public DbSet<Company> Companies { get; set; }
-public DbSet<Employee> Employees { get; set; }
+1)	Create Model Classes (Entities --> ModelsFiles)
+2)	 Create Db Context.cs (Entities --> Files)
+
+    public class RepositoryContext : DbContext
+    {
+    public RepositoryContext(DbContextOptions options) : base(options) {}
+    public DbSet<Company> Companies { get; set; }
+    public DbSet<Employee> Employees { get; set; }
 3)	Add conn str to appSettings.json
-"ConnectionStrings": { "sqlConnection": "Data Source=Tyler-Desktop;Initial Catalog=CompanyEmployee;Integrated Security=True" },
+
+
+    "ConnectionStrings": { "sqlConnection": "Data Source=Tyler-Desktop;Initial Catalog=CompanyEmployee;Integrated Security=True" },
 4)	Configure ServiceExtension.cs
-public static void ConfigureSqlContext(this IServiceCollection services,
-IConfiguration configuration) =>
-services.AddDbContext<RepositoryContext>(opts =>
-opts.UseSqlServer(configuration.GetConnectionString("sqlConnection"), b=>
-b.MigrationsAssembly("CompanyEmployees")));
-5)	Update Startup.cs  ConfigureServices(IServiceCollection services)
-services.ConfigureSqlContext(Configuration);
-Before services.AddControllers();
-6)	Seed Db step (Configuration CompanyConfiguration/EmployeeConfiguration)
+
+
+    public static void ConfigureSqlContext(this IServiceCollection services,
+    IConfiguration configuration) =>
+        services.AddDbContext<RepositoryContext>(opts =>
+        opts.UseSqlServer(configuration.GetConnectionString("sqlConnection"), b=>
+        b.MigrationsAssembly("CompanyEmployees")));
+5)	Update Startup.cs --> ConfigureServices(IServiceCollection services)
+
+
+    services.ConfigureSqlContext(Configuration);
+    //Before services.AddControllers();
+6)	Seed Db step (Configuration--> CompanyConfiguration/EmployeeConfiguration)
 May skip to Step 8, to avoid seeding Db
     //File is only to Seed DB
+    
+    
     public class EmployeeConfiguration : IEntityTypeConfiguration<Employee> { 
         public void Configure(EntityTypeBuilder<Employee> builder) 
         { builder.HasData
@@ -323,7 +358,7 @@ public interface IRepositoryBase<T>
         void Update(T entity); 
         void Delete(T entity);
     }
-MainProject  RepositoryBase.cs
+MainProject --> RepositoryBase.cs
 public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
         protected RepositoryContext RepositoryContext; 
@@ -356,11 +391,13 @@ there’s no need to track changes for required entities. Improving speed of que
 Repository User Interfaces and Classes
 By inheriting from RepositoryBase.cs the user classes will have access to all methods from it. On top of that, each user class will have interface for additional model-specific methods.
 Allowing separating of logic that is common and specific to each user class itself.
-1)	Contracts  ICompanyRepository & IEmployeeRepository
+1)	Contracts --> ICompanyRepository & IEmployeeRepository
 public interface IEmployeeRepository {} 
-2)	Repository  CompanyRepository & EmployeeRepository
+2)	Repository --> CompanyRepository & EmployeeRepository
+
+
     public class EmployeeRepository : 
-RepositoryBase<Employee>, IEmployeeRepository
+    RepositoryBase<Employee>, IEmployeeRepository
     {
         public EmployeeRepository(RepositoryContext repositoryContext) : base(repositoryContext) { }
     }
@@ -422,16 +459,20 @@ Repository  RepositoryManager
 
 RepositoryManager.cs  creates properties that expose the concrete repositories and have the Save() method to be used after modifications are finished on a certain object. This practice allows modification of two companies, employees, and delete one company all in a single action then just calling Save() once.
 These changes will be applied or if fails, changes will be reverted.
-ServicesExtension.cs  ConfigureRepositoryManager()
-public static void ConfigureRepositoryManager(this IServiceCollection service
-  => services.AddScoped<IRepositoryManager, RepositoryManager>();
-Update Startup.cs  ConfigureServices()
-  services.ConfigureRepositoryManager();
+ServicesExtension.cs--> ConfigureRepositoryManager()
+
+    public static void ConfigureRepositoryManager(this IServiceCollection service
+      => services.AddScoped<IRepositoryManager, RepositoryManager>();
+      
+Update Startup.cs --> ConfigureServices()
+
+    services.ConfigureRepositoryManager();
 
 Injecting RepositoryManager.cs inside controller gives visibility on Company and Employee properties which provides access to specific repository methods
-[ApiController]
-[Route("[controller]")]
-public class WeatherForecastController : ControllerBase
+
+    [ApiController]
+    [Route("[controller]")]
+    public class WeatherForecastController : ControllerBase
     {
         private ILoggerManager _logger;
         private readonly IRepositoryManager _repository;
