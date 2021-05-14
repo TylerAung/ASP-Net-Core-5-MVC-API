@@ -15,6 +15,7 @@ using CompanyEmployees.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
 using System.IO;
+using Contracts;
 
 namespace CompanyEmployees
 {
@@ -38,6 +39,7 @@ namespace CompanyEmployees
             services.ConfigureLoggerService();
             services.ConfigureSqlContext(Configuration);
             services.ConfigureRepositoryManager();
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -47,7 +49,7 @@ namespace CompanyEmployees
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerManager logger)
         {//Add different middleware components to app request pipeline
             if (env.IsDevelopment())
             {
@@ -60,6 +62,7 @@ namespace CompanyEmployees
                 app.UseHsts();
             }
 
+            app.ConfigureExceptionHandler(logger);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCors("CorsPolicy");
@@ -74,8 +77,13 @@ namespace CompanyEmployees
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                //endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=home}/{action=Index}/{id?}");
             });
         }
     }
 }
+
+//endpoints.MapControllers();

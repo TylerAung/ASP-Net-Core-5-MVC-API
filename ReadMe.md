@@ -280,9 +280,7 @@ ServiceExtension Connection
 6)	Seed Db step (Configuration--> CompanyConfiguration/EmployeeConfiguration)
 May skip to Step 8, to avoid seeding Db
     //File is only to Seed DB
-    
-    
-    
+
     
     public class EmployeeConfiguration : IEntityTypeConfiguration<Employee> { 
         public void Configure(EntityTypeBuilder<Employee> builder) 
