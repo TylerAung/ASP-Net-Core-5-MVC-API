@@ -41,7 +41,11 @@ namespace CompanyEmployees
             services.ConfigureRepositoryManager();
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddControllers();
+            services.AddControllers(config => {
+                config.RespectBrowserAcceptHeader = true;
+                config.ReturnHttpNotAcceptable = true;//Restricting Media Types
+            }).AddXmlDataContractSerializerFormatters()
+              .AddCustomCSVFormatter();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CompanyEmployees", Version = "v1" });

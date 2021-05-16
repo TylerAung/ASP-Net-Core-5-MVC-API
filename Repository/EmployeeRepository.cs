@@ -14,9 +14,13 @@ namespace Repository
     {
         public EmployeeRepository(RepositoryContext repositoryContext) : base(repositoryContext) { }
 
-        public void testing()
-        {
-            Console.WriteLine("Testing");
-        }
+        //Get All Employees
+        public IEnumerable<Employee> GetEmployees(Guid companyId, bool trackChanges)
+            => FindByCondition(e => e.CompanyId.Equals(companyId),
+                trackChanges).OrderBy(e => e.Name);
+        //Get Single Employee under Company Id
+        public Employee GetEmployee(Guid companyId, Guid id, bool trackChanges)
+        => FindByCondition(e => e.CompanyId.Equals(companyId) && e.Id.Equals(id),
+            trackChanges).SingleOrDefault();
     }
 }
