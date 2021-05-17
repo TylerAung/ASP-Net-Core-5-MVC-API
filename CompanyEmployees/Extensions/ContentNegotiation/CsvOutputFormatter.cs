@@ -9,7 +9,7 @@ using Entities.DataTransferObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 
-namespace CompanyEmployees.Extensions
+namespace CompanyEmployees.Extensions.ContentNegotiation
 {
     public class CsvOutputFormatter : TextOutputFormatter
     {

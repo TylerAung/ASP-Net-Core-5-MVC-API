@@ -18,6 +18,10 @@ namespace CompanyEmployees.Extensions
                     opt => opt.MapFrom(x => string.Join(' ', x.Address, x.Country)));
 
             CreateMap<Employee, EmployeeDto>();//For Employee DTO
+
+            CreateMap<CompanyForCreationDto, Company>(); //Post Company Creation with DTO
+
+            CreateMap<EmployeeForCreationDto, Employee>(); //Post Employee under Company with DTO
         }
 
 

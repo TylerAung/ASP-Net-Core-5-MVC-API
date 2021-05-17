@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Entities;
 using Microsoft.EntityFrameworkCore;
 using Repository;
+using CompanyEmployees.Extensions.ContentNegotiation;
 
 namespace CompanyEmployees.Extensions
 {

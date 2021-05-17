@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc.Formatters;
 
-namespace CompanyEmployees.Extensions
+namespace CompanyEmployees.Extensions.ContentNegotiation
 {
     public class InputFormatter : TextInputFormatter
     {
