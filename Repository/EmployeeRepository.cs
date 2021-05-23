@@ -12,6 +12,7 @@ namespace Repository
 {
     public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
     {
+        //Enforcement here comes from Contracts/IEmployeeRepository
         public EmployeeRepository(RepositoryContext repositoryContext) : base(repositoryContext) { }
 
         //Get All Employees
@@ -28,5 +29,11 @@ namespace Repository
             employee.CompanyId = companyId;
             Create(employee);
         }
+        //For Deleteing Employee
+        public void DeleteEmployee(Employee employee)
+        {
+            Delete(employee);
+        }
+
     }
 }
