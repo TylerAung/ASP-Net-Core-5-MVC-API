@@ -22,6 +22,10 @@ namespace CompanyEmployees.Extensions
             CreateMap<CompanyForCreationDto, Company>(); //Post Company Creation with DTO
 
             CreateMap<EmployeeForCreationDto, Employee>(); //Post Employee under Company with DTO
+
+            CreateMap<EmployeeForUpdateDto, Employee>().ReverseMap(); //PUT Handler, Employee for Update
+
+            CreateMap<CompanyForUpdateDto, Company>(); //PUT Handler, Company update
         }
 
 
