@@ -9,6 +9,7 @@ using Contracts;
 using AutoMapper;
 using Entities.DataTransferObjects;
 using Entities.Models;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace CompanyEmployees.Controllers
 {
@@ -68,6 +69,11 @@ namespace CompanyEmployees.Controllers
                 _logger.LogError("EmployeeForCreationDto object sent from client is null.");
                 return BadRequest("EmployeeForCreationDto object is null");
             }
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for the EmployeeForCreationDto object");
+                return UnprocessableEntity(ModelState);
+            }
             var company = _repository.Company.GetCompany(companyId, trackChanges: false);
             if (company == null)
             {
@@ -92,6 +98,11 @@ namespace CompanyEmployees.Controllers
             {
                 _logger.LogError("EmployeeForUpdateDto object sent from client is null.");
                 return BadRequest("EmployeeForUpdateDto object is null");
+            }
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for the EmployeeForUpdateDto object");
+                return UnprocessableEntity(ModelState);
             }
             var company = _repository.Company.GetCompany(companyId, trackChanges: false);
             if (company == null)
@@ -132,6 +143,14 @@ namespace CompanyEmployees.Controllers
             }
             var employeeToPatch = _mapper.Map<EmployeeForUpdateDto>(employeeEntity);
             patchDoc.ApplyTo(employeeToPatch);
+
+            TryValidateModel(employeeToPatch); 
+            if (!ModelState.IsValid) 
+            {
+                _logger.LogError("Invalid model state for the patch document");
+                return UnprocessableEntity(ModelState);
+            }
+
             _mapper.Map(employeeToPatch, employeeEntity);
             _repository.Save();
             return NoContent();
