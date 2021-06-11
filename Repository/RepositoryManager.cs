@@ -43,6 +43,7 @@ namespace Repository
         }
 
         //Method to be used after all the modifications are finished on a certain object
-        public void Save() => _repositoryContext.SaveChanges();
+        //public void Save() => _repositoryContext.SaveChanges();
+        public Task SaveAsync() => _repositoryContext.SaveChangesAsync();
     }
 }
