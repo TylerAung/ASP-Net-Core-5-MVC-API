@@ -131,6 +131,7 @@ namespace CompanyEmployees.Controllers
 
         [HttpPut("{id}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ServiceFilter(typeof(ValidateCompanyExistsAttribute))]
         //public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
         public async Task<IActionResult> UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
         {
@@ -145,12 +146,13 @@ namespace CompanyEmployees.Controllers
             //    return UnprocessableEntity(ModelState);
             //}
             //var companyEntity = _repository.Company.GetCompany(id, trackChanges: true);
-            var companyEntity = await _repository.Company.GetCompanyAsync(id, trackChanges: true);
+            //var companyEntity = await _repository.Company.GetCompanyAsync(id, trackChanges: true); //Version 1
+            var companyEntity = HttpContext.Items["company"] as Company; //Version 2
             if (companyEntity == null)
             {
                 _logger.LogInfo($"Company with id: {id} doesn't exist in the database.");
                 return NotFound();
-            }
+            } //Version 1, removed in Version 2
             _mapper.Map(company, companyEntity);
             //_repository.Save();
             await _repository.SaveAsync();
@@ -158,18 +160,12 @@ namespace CompanyEmployees.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ServiceFilter(typeof(ValidateCompanyExistsAttribute))]
         //public IActionResult DeleteCompany(Guid id)
         public async Task<IActionResult> DeleteCompany(Guid id)
         {
-            //var company = _repository.Company.GetCompany(id, trackChanges: false);
-            var company = await _repository.Company.GetCompanyAsync(id, trackChanges: false);
-            if (company == null)
-            {
-                _logger.LogInfo($"Company with id: {id} doesn't exist in the database.");
-                return NotFound();
-            }
+            var company = HttpContext.Items["company"] as Company; //Version 2
             _repository.Company.DeleteCompany(company);
-            //_repository.Save();
             await _repository.SaveAsync();
             return NoContent();
         }
