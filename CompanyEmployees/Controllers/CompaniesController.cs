@@ -14,7 +14,6 @@ using CompanyEmployees.Extensions.ActionFilters;
 
 namespace CompanyEmployees.Controllers
 {
-    [ServiceFilter(typeof(ControllerFilterExample), Order = 2)] // From startup.cs & ActionFilter
     [Route("api/companies")] //Represent routing
     [ApiController]
     public class CompaniesController : ControllerBase
@@ -29,7 +28,6 @@ namespace CompanyEmployees.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        [ServiceFilter(typeof(ActionFilterExample), Order =1)] // From startup.cs & ActionFilter
         //public IActionResult GetCompanies() 
         //{ 
         //    //_repository.Company.GetAllCompanies
@@ -57,28 +55,6 @@ namespace CompanyEmployees.Controllers
             }
         }
 
-        [HttpPost]
-        //public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
-        public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
-        {
-            if (company == null)
-            {
-                _logger.LogError("CompanyForCreationDto object sent from client is null.");
-                return BadRequest("CompanyForCreationDto object is null");
-            }
-            var companyEntity = _mapper.Map<Company>(company);
-            _repository.Company.CreateCompany(companyEntity);
-            //_repository.Save();
-            await _repository.SaveAsync();
-            var companyToReturn = _mapper.Map<CompanyDto>(companyEntity);
-            return CreatedAtRoute("CompanyById", new
-            {
-                id = companyToReturn.Id
-            }, companyToReturn);
-            //CreatedAtRoute = Returns a URI to the newly created resource when
-            //you invoke a POST method to store some new object
-        }
-
         [HttpGet("collection/({ids})", Name = "CompanyCollection")]
         //public IActionResult GetCompanyCollection(IEnumerable<Guid> ids)
         //public IActionResult GetCompanyCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
@@ -99,6 +75,34 @@ namespace CompanyEmployees.Controllers
             }
             var companiesToReturn = _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
             return Ok(companiesToReturn);
+        }
+
+        [HttpPost]
+        //public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
+        {
+            //if (company == null)
+            //{
+            //    _logger.LogError("CompanyForCreationDto object sent from client is null.");
+            //    return BadRequest("CompanyForCreationDto object is null");
+            //}
+            //if (!ModelState.IsValid)
+            //{
+            //    _logger.LogError("Invalid model state for the CompanyForCreationDto object");
+            //    return UnprocessableEntity(ModelState);
+            //}
+            var companyEntity = _mapper.Map<Company>(company);
+            _repository.Company.CreateCompany(companyEntity);
+            //_repository.Save();
+            await _repository.SaveAsync();
+            var companyToReturn = _mapper.Map<CompanyDto>(companyEntity);
+            return CreatedAtRoute("CompanyById", new
+            {
+                id = companyToReturn.Id
+            }, companyToReturn);
+            //CreatedAtRoute = Returns a URI to the newly created resource when
+            //you invoke a POST method to store some new object
         }
 
         [HttpPost("collection")]
@@ -126,14 +130,20 @@ namespace CompanyEmployees.Controllers
         }
 
         [HttpPut("{id}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         //public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
         public async Task<IActionResult> UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
         {
-            if (company == null)
-            {
-                _logger.LogError("CompanyForUpdateDto object sent from client is null.");
-                return BadRequest("CompanyForUpdateDto object is null");
-            }
+            //if (company == null)
+            //{
+            //    _logger.LogError("CompanyForUpdateDto object sent from client is null.");
+            //    return BadRequest("CompanyForUpdateDto object is null");
+            //}
+            //if (!ModelState.IsValid)
+            //{
+            //    _logger.LogError("Invalid model state for the CompanyForCreationDto object");
+            //    return UnprocessableEntity(ModelState);
+            //}
             //var companyEntity = _repository.Company.GetCompany(id, trackChanges: true);
             var companyEntity = await _repository.Company.GetCompanyAsync(id, trackChanges: true);
             if (companyEntity == null)

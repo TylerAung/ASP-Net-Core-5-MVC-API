@@ -32,7 +32,7 @@ namespace CompanyEmployees.Controllers
             _repository = repository;
         }
         [HttpGet] 
-        public ActionResult<IEnumerable<string>> Get() { 
+        public async Task<ActionResult<IEnumerable<string>>> GetAsync() { 
             _logger.LogInfo("Here is info message from our values controller.");
             _logger.LogDebug("Here is debug message from our values controller.");
             _logger.LogWarn("Here is warn message from our values controller.");
@@ -41,7 +41,7 @@ namespace CompanyEmployees.Controllers
             //_repository.Company.AnyMethodFromCompanyRepository(); 
             //_repository.Employee.AnyMethodFromEmployeeRepository();
 
-            _repository.Save();
+            await _repository.SaveAsync();
 
             return new string[] { "value1", "value2" }; 
         }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
@@ -16,13 +17,15 @@ namespace Repository
         public EmployeeRepository(RepositoryContext repositoryContext) : base(repositoryContext) { }
 
         //Get All Employees
-        public IEnumerable<Employee> GetEmployees(Guid companyId, bool trackChanges)
-            => FindByCondition(e => e.CompanyId.Equals(companyId),
-                trackChanges).OrderBy(e => e.Name);
+        public async Task<IEnumerable<Employee>> GetEmployeesAsync(Guid companyId, bool trackChanges) => 
+            await FindByCondition(e => e.CompanyId.Equals(companyId),
+                trackChanges)
+            .OrderBy(e => e.Name)
+            .ToListAsync();
         //Get Single Employee under Company Id
-        public Employee GetEmployee(Guid companyId, Guid id, bool trackChanges)
-        => FindByCondition(e => e.CompanyId.Equals(companyId) && e.Id.Equals(id),
-            trackChanges).SingleOrDefault();
+        public async Task<Employee> GetEmployeeAsync(Guid companyId, Guid id, bool trackChanges) => 
+            await FindByCondition(e => e.CompanyId.Equals(companyId) && e.Id.Equals(id),
+            trackChanges).SingleOrDefaultAsync();
         //Create Employee Under Company
         public void CreateEmployeeForCompany(Guid companyId, Employee employee)
         {
@@ -35,5 +38,9 @@ namespace Repository
             Delete(employee);
         }
 
+        //public void DeleteEmployee(Task<Employee> employeeForCompany)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
