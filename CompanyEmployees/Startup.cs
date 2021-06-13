@@ -44,6 +44,8 @@ namespace CompanyEmployees
             services.AddScoped<ValidationFilterAttribute>(); //Action Filter for model Validation
             services.AddScoped<ValidateCompanyExistsAttribute>(); //Action Filter with Dependency Injection looking up ID (COY)
             services.AddScoped<ValidateEmployeeForCompanyExistsAttribute>(); //Action Filter with Dependency Injection looking up ID (Emp)
+            services.AddAuthentication(); 
+            services.ConfigureIdentity();
 
             services.Configure<ApiBehaviorOptions>(options => {
                 options.SuppressModelStateInvalidFilter = true;
@@ -86,6 +88,7 @@ namespace CompanyEmployees
 
             app.UseRouting();
 
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -66,16 +66,6 @@ namespace CompanyEmployees.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateEmployeeForCompany(Guid companyId, [FromBody] EmployeeForCreationDto employee)
         {
-            //if (employee == null)
-            //{
-            //    _logger.LogError("EmployeeForCreationDto object sent from client is null.");
-            //    return BadRequest("EmployeeForCreationDto object is null");
-            //}
-            //if (!ModelState.IsValid)
-            //{
-            //    _logger.LogError("Invalid model state for the EmployeeForCreationDto object");
-            //    return UnprocessableEntity(ModelState);
-            //}
             var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges: false);
             if (company == null)
             {
@@ -98,33 +88,6 @@ namespace CompanyEmployees.Controllers
         [ServiceFilter(typeof(ValidateEmployeeForCompanyExistsAttribute))]
         public async Task<IActionResult> UpdateEmployeeForCompany(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employee)
         {
-            //@Remove from here 
-            //if (employee == null)
-            //{
-            //    _logger.LogError("EmployeeForUpdateDto object sent from client is null.");
-            //    return BadRequest("EmployeeForUpdateDto object is null");
-            //}
-            //if (!ModelState.IsValid)
-            //{
-            //    _logger.LogError("Invalid model state for the EmployeeForUpdateDto object");
-            //    return UnprocessableEntity(ModelState);
-            //}
-            //To here, with Action Filter Implementation (Action Filter 1)
-
-            //@Remove from here 
-            //var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges: false);
-            //if (company == null)
-            //{
-            //    _logger.LogInfo($"Company with id: {companyId} doesn't exist in the database.");
-            //    return NotFound();
-            //}
-            //var employeeEntity = _repository.Employee.GetEmployeeAsync(companyId, id, trackChanges: true);
-            //if (employeeEntity == null)
-            //{
-            //    _logger.LogInfo($"Employee with id: {id} doesn't exist in the database.");
-            //    return NotFound();
-            //}
-            //To here, with Action Filter Implementation (Action Filter 2)
             var employeeEntity = HttpContext.Items["employee"] as Employee;
             _mapper.Map(employee, employeeEntity);
             await _repository.SaveAsync();
@@ -140,20 +103,6 @@ namespace CompanyEmployees.Controllers
                 _logger.LogError("patchDoc object sent from client is null.");
                 return BadRequest("patchDoc object is null");
             }
-            //@Remove from here 
-            //var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges: false);
-            //if (company == null)
-            //{
-            //    _logger.LogInfo($"Company with id: {companyId} doesn't exist in the database.");
-            //    return NotFound();
-            //}
-            //var employeeEntity = _repository.Employee.GetEmployeeAsync(companyId, id, trackChanges: true);
-            //if (employeeEntity == null)
-            //{
-            //    _logger.LogInfo($"Employee with id: {id} doesn't exist in the database.");
-            //    return NotFound();
-            //}
-            //To here, with Action Filter Implementation (Action Filter 2)
             var employeeEntity = HttpContext.Items["employee"] as Employee;
             var employeeToPatch = _mapper.Map<EmployeeForUpdateDto>(employeeEntity);
             patchDoc.ApplyTo(employeeToPatch);
@@ -174,20 +123,6 @@ namespace CompanyEmployees.Controllers
         [ServiceFilter(typeof(ValidateEmployeeForCompanyExistsAttribute))]
         public async Task<IActionResult> DeleteEmployeeForCompany(Guid companyId, Guid id)
         {
-            //@Remove from here
-            //var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges: false);
-            //if (company == null)
-            //{
-            //    _logger.LogInfo($"Company with id: {companyId} doesn't exist in the database.");
-            //    return NotFound();
-            //}
-            //var employeeForCompany = await _repository.Employee.GetEmployeeAsync(companyId, id, trackChanges: false);
-            //if (employeeForCompany == null)
-            //{
-            //    _logger.LogInfo($"Employee with id: {id} doesn't exist in the database.");
-            //    return NotFound();
-            //}
-            //To here, with Action Filter Implementation
             var employeeForCompany = HttpContext.Items["employee"] as Employee;
             _repository.Employee.DeleteEmployee(employeeForCompany);
             await _repository.SaveAsync();

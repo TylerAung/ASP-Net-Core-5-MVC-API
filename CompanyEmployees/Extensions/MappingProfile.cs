@@ -26,6 +26,8 @@ namespace CompanyEmployees.Extensions
             CreateMap<EmployeeForUpdateDto, Employee>().ReverseMap(); //PUT Handler, Employee for Update
 
             CreateMap<CompanyForUpdateDto, Company>(); //PUT Handler, Company update
+
+            CreateMap<UserForRegistrationDto, User>(); //Maps User class for Registration
         }
 
 
