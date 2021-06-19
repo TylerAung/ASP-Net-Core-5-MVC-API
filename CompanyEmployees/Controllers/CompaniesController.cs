@@ -11,6 +11,7 @@ using AutoMapper;
 using Entities.Models;
 using CompanyEmployees.ModelBinders;
 using CompanyEmployees.Extensions.ActionFilters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CompanyEmployees.Controllers
 {
@@ -27,7 +28,7 @@ namespace CompanyEmployees.Controllers
             _logger = logger;
             _mapper = mapper;
         }
-        [HttpGet]
+        [HttpGet(Name = "GetCompanies"), Authorize]
         //public IActionResult GetCompanies() 
         //{ 
         //    //_repository.Company.GetAllCompanies

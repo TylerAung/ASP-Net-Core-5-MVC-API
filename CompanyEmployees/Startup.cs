@@ -46,6 +46,7 @@ namespace CompanyEmployees
             services.AddScoped<ValidateEmployeeForCompanyExistsAttribute>(); //Action Filter with Dependency Injection looking up ID (Emp)
             services.AddAuthentication(); 
             services.ConfigureIdentity();
+            services.ConfigureJWT(Configuration);
 
             services.Configure<ApiBehaviorOptions>(options => {
                 options.SuppressModelStateInvalidFilter = true;
